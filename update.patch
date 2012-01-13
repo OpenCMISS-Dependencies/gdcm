@@ -1,0 +1,265 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8b582cc..a644411 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -20,6 +20,8 @@ ELSE(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 2.6)
+   SET(NAMELINK_SKIP)
+ ENDIF(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 2.6)
+ 
++SET( CMAKE_DEBUG_POSTFIX "d" )
++
+ # TODO
+ # http://www.vtk.org/pipermail/vtkusers/2007-May/090968.html 
+ # 
+@@ -91,10 +93,10 @@ ENDIF(GDCM_MINOR_VERSION MATCHES "[02468]$")
+ 
+ #-----------------------------------------------------------------------------
+ # VS 2005 declared that some C functions were deprecated...
+-IF(CMAKE_COMPILER_2005)
++IF(MSVC)
+   ADD_DEFINITIONS(-D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
+   ADD_DEFINITIONS(-D_SCL_SECURE_NO_DEPRECATE)
+-ENDIF(CMAKE_COMPILER_2005)
++ENDIF(MSVC)
+ 
+ #-----------------------------------------------------------------------------
+ # Build shared lib by default
+@@ -292,6 +294,7 @@ MARK_AS_ADVANCED(GDCM_USE_PVRG)
+ IF(GDCM_USE_SYSTEM_ZLIB)
+   # If user say so, then this is a requirement !
+   FIND_PACKAGE(ZLIB REQUIRED)
++  INCLUDE_DIRECTORIES( ${ZLIB_INCLUDE_DIR} )
+   SET(GDCM_ZLIB_LIBRARIES ${ZLIB_LIBRARIES})
+ ELSE(GDCM_USE_SYSTEM_ZLIB)
+   SET(GDCM_ZLIB_LIBRARIES "gdcmzlib")
+@@ -770,5 +773,25 @@ IF(GDCM_USE_VTK)
+       )
+ ENDIF(GDCM_USE_VTK)
+ SET(GDCM_LIBRARY_DIRS ${LIBRARY_OUTPUT_PATH})
+-SUBDIRS(CMake/ExportConfiguration)
++#SUBDIRS(CMake/ExportConfiguration)
++
++SET( GDCM_LIB_GROUP gdcm )
++SET( CONFIG_FILE_CONTENTS
++	"\nIF( NOT DEFINED _GDCM_CONFIG_CMAKE )" 
++	"\nSET( _GDCM_CONFIG_CMAKE TRUE )" 
++	"${DEPENDENT_CONFIGS}"
++	"\nGET_FILENAME_COMPONENT( SELF_DIR \"\${CMAKE_CURRENT_LIST_FILE}\" PATH )"
++	"\nINCLUDE( \${SELF_DIR}/${GDCM_LIB_GROUP}-targets.cmake )"
++	"\nGET_FILENAME_COMPONENT( GDCM_INCLUDE_DIR \"\${SELF_DIR}/../../include\" ABSOLUTE )"
++	"\nSET( GDCM_INCLUDE_DIRS \${GDCM_INCLUDE_DIR} ${INCLUDE_DIRS} )"
++	"\nSET( GDCM_LIBRARIES gdcmCWRAPPER gdcmCommon gdcmDICT gdcmDSED gdcmIOD gdcmMSFF )"
++	"\nSET( GDCM_DEFINITIONS ${DEPENDENT_DEFINITIONS} )"
++	"\nSET( GDCM_FOUND TRUE )" 
++	"\nENDIF( NOT DEFINED _GDCM_CONFIG_CMAKE )" 
++	"\n\n" )
++SET( CONFIG_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/${GDCM_LIB_GROUP}-config.cmake )
++FILE( WRITE ${CONFIG_FILE_NAME} ${CONFIG_FILE_CONTENTS} )
++
++INSTALL( EXPORT ${GDCM_LIB_GROUP}-targets DESTINATION ${GDCM_INSTALL_LIB_DIR}/cmake )
++INSTALL( FILES ${CONFIG_FILE_NAME} DESTINATION ${GDCM_INSTALL_LIB_DIR}/cmake )
+ 
+diff --git a/Source/Common/CMakeLists.txt b/Source/Common/CMakeLists.txt
+index 508a35e..c55fc58 100644
+--- a/Source/Common/CMakeLists.txt
++++ b/Source/Common/CMakeLists.txt
+@@ -132,7 +132,7 @@ ENDIF(GDCM_USE_SYSTEM_OPENSSL)
+ 
+ IF(NOT GDCM_INSTALL_NO_LIBRARIES)
+   # Runtime
+-  INSTALL(TARGETS gdcmCommon
++  INSTALL(TARGETS gdcmCommon EXPORT gdcm-targets
+     RUNTIME DESTINATION ${GDCM_INSTALL_BIN_DIR} COMPONENT Applications
+     LIBRARY DESTINATION ${GDCM_INSTALL_LIB_DIR} COMPONENT Libraries ${NAMELINK_SKIP}
+     ARCHIVE DESTINATION ${GDCM_INSTALL_LIB_DIR} COMPONENT Development
+diff --git a/Source/Common/zipstreamimpl.h b/Source/Common/zipstreamimpl.h
+index 4367ac0..7f13fb2 100644
+--- a/Source/Common/zipstreamimpl.h
++++ b/Source/Common/zipstreamimpl.h
+@@ -342,9 +342,9 @@ inline bool isGZip(std::istream &is)
+     return true;
+ }
+ 
+-#include "zipstreamimpl.hpp"
+-
+ }
+ 
++#include "zipstreamimpl.hpp"
++
+ #endif // _ZIPSTREAM_H_
+ 
+diff --git a/Source/Common/zipstreamimpl.hpp b/Source/Common/zipstreamimpl.hpp
+index 7365f1b..551211f 100644
+--- a/Source/Common/zipstreamimpl.hpp
++++ b/Source/Common/zipstreamimpl.hpp
+@@ -49,6 +49,9 @@ Altered by: Mathieu Malaterre 2008, for GDCM project
+  * More info on the following parameters can be found in the zlib documentation.
+  */
+ 
++namespace zlib_stream
++{
++
+ template <class charT, class traits>
+ basic_zip_streambuf<charT, traits>::basic_zip_streambuf(ostream_reference ostream,
+                                                         int level,
+@@ -823,3 +826,5 @@ basic_zip_istream<charT, traits>::read_footer(void)
+     }
+ }
+ 
++}
++
+diff --git a/Source/DataDictionary/CMakeLists.txt b/Source/DataDictionary/CMakeLists.txt
+index a51560d..18d3f71 100644
+--- a/Source/DataDictionary/CMakeLists.txt
++++ b/Source/DataDictionary/CMakeLists.txt
+@@ -100,7 +100,7 @@ SET_TARGET_PROPERTIES(gdcmDICT PROPERTIES ${GDCM_LIBRARY_PROPERTIES})
+ TARGET_LINK_LIBRARIES(gdcmDICT gdcmDSED gdcmIOD)
+ IF(NOT GDCM_INSTALL_NO_LIBRARIES)
+   # Runtime
+-  INSTALL(TARGETS gdcmDICT
++  INSTALL(TARGETS gdcmDICT EXPORT gdcm-targets
+     RUNTIME DESTINATION ${GDCM_INSTALL_BIN_DIR} COMPONENT Applications
+     LIBRARY DESTINATION ${GDCM_INSTALL_LIB_DIR} COMPONENT Libraries ${NAMELINK_SKIP}
+     ARCHIVE DESTINATION ${GDCM_INSTALL_LIB_DIR} COMPONENT Development
+diff --git a/Source/DataStructureAndEncodingDefinition/CMakeLists.txt b/Source/DataStructureAndEncodingDefinition/CMakeLists.txt
+index e9d0f27..6e635bd 100644
+--- a/Source/DataStructureAndEncodingDefinition/CMakeLists.txt
++++ b/Source/DataStructureAndEncodingDefinition/CMakeLists.txt
+@@ -59,7 +59,7 @@ TARGET_LINK_LIBRARIES(gdcmDSED gdcmCommon)
+ SET_TARGET_PROPERTIES(gdcmDSED PROPERTIES ${GDCM_LIBRARY_PROPERTIES})
+ IF(NOT GDCM_INSTALL_NO_LIBRARIES)
+   # Runtime
+-  INSTALL(TARGETS gdcmDSED
++  INSTALL(TARGETS gdcmDSED EXPORT gdcm-targets
+     RUNTIME DESTINATION ${GDCM_INSTALL_BIN_DIR} COMPONENT Applications
+     LIBRARY DESTINATION ${GDCM_INSTALL_LIB_DIR} COMPONENT Libraries ${NAMELINK_SKIP}
+     ARCHIVE DESTINATION ${GDCM_INSTALL_LIB_DIR} COMPONENT Development
+diff --git a/Source/InformationObjectDefinition/CMakeLists.txt b/Source/InformationObjectDefinition/CMakeLists.txt
+index b05abc1..d3ec098 100644
+--- a/Source/InformationObjectDefinition/CMakeLists.txt
++++ b/Source/InformationObjectDefinition/CMakeLists.txt
+@@ -42,7 +42,7 @@ SET_TARGET_PROPERTIES(gdcmIOD PROPERTIES ${GDCM_LIBRARY_PROPERTIES})
+ TARGET_LINK_LIBRARIES(gdcmIOD gdcmDSED gdcmCommon ${GDCM_EXPAT_LIBRARIES})
+ IF(NOT GDCM_INSTALL_NO_LIBRARIES)
+   # Runtime
+-  INSTALL(TARGETS gdcmIOD
++  INSTALL(TARGETS gdcmIOD EXPORT gdcm-targets
+     RUNTIME DESTINATION ${GDCM_INSTALL_BIN_DIR} COMPONENT Applications
+     LIBRARY DESTINATION ${GDCM_INSTALL_LIB_DIR} COMPONENT Libraries ${NAMELINK_SKIP}
+     ARCHIVE DESTINATION ${GDCM_INSTALL_LIB_DIR} COMPONENT Development
+diff --git a/Source/MediaStorageAndFileFormat/CMakeLists.txt b/Source/MediaStorageAndFileFormat/CMakeLists.txt
+index a5eef33..0c46465 100644
+--- a/Source/MediaStorageAndFileFormat/CMakeLists.txt
++++ b/Source/MediaStorageAndFileFormat/CMakeLists.txt
+@@ -153,7 +153,7 @@ ELSE(WIN32)
+ TARGET_LINK_LIBRARIES(gdcmMSFF ${GDCMUUID})
+ ENDIF(WIN32)
+ IF(NOT GDCM_INSTALL_NO_LIBRARIES)
+-  INSTALL(TARGETS gdcmMSFF
++	INSTALL(TARGETS gdcmMSFF EXPORT gdcm-targets
+     RUNTIME DESTINATION ${GDCM_INSTALL_BIN_DIR} COMPONENT Applications
+     LIBRARY DESTINATION ${GDCM_INSTALL_LIB_DIR} COMPONENT Libraries ${NAMELINK_SKIP}
+     ARCHIVE DESTINATION ${GDCM_INSTALL_LIB_DIR} COMPONENT Development
+diff --git a/Utilities/gdcmexpat/lib/CMakeLists.txt b/Utilities/gdcmexpat/lib/CMakeLists.txt
+index e848b8e..14ede4b 100644
+--- a/Utilities/gdcmexpat/lib/CMakeLists.txt
++++ b/Utilities/gdcmexpat/lib/CMakeLists.txt
+@@ -22,7 +22,7 @@ ENDIF(WIN32)
+ ADD_LIBRARY(${EXPAT_LIBRARY_NAME} ${EXPAT_SRCS})
+ SET_TARGET_PROPERTIES(${EXPAT_LIBRARY_NAME} PROPERTIES ${EXPAT_LIBRARY_PROPERTIES})
+ IF(NOT EXPAT_INSTALL_NO_LIBRARIES)
+-  INSTALL(TARGETS ${EXPAT_LIBRARY_NAME}
++	INSTALL(TARGETS ${EXPAT_LIBRARY_NAME} EXPORT gdcm-targets
+     RUNTIME DESTINATION ${EXPAT_INSTALL_BIN_DIR} COMPONENT Applications
+     LIBRARY DESTINATION ${EXPAT_INSTALL_LIB_DIR} COMPONENT Libraries
+     ARCHIVE DESTINATION ${EXPAT_INSTALL_LIB_DIR} COMPONENT Development
+diff --git a/Utilities/gdcmjpeg/12/CMakeLists.txt b/Utilities/gdcmjpeg/12/CMakeLists.txt
+index afd414b..c81176c 100644
+--- a/Utilities/gdcmjpeg/12/CMakeLists.txt
++++ b/Utilities/gdcmjpeg/12/CMakeLists.txt
+@@ -6,7 +6,7 @@ INCLUDE_DIRECTORIES(BEFORE
+ ADD_LIBRARY(${JPEG_LIBRARY_NAME}12 ${JPEG_SOURCES})
+ SET_TARGET_PROPERTIES(${JPEG_LIBRARY_NAME}12 PROPERTIES ${JPEG_LIBRARY_PROPERTIES})
+ IF(NOT JPEG_INSTALL_NO_LIBRARIES)
+-  INSTALL(TARGETS ${JPEG_LIBRARY_NAME}12
++	INSTALL(TARGETS ${JPEG_LIBRARY_NAME}12 EXPORT gdcm-targets
+     RUNTIME DESTINATION ${JPEG_INSTALL_BIN_DIR} COMPONENT Applications
+     LIBRARY DESTINATION ${JPEG_INSTALL_LIB_DIR} COMPONENT Libraries ${NAMELINK_SKIP}
+     ARCHIVE DESTINATION ${JPEG_INSTALL_LIB_DIR} COMPONENT Development
+diff --git a/Utilities/gdcmjpeg/16/CMakeLists.txt b/Utilities/gdcmjpeg/16/CMakeLists.txt
+index b10a55b..8197387 100644
+--- a/Utilities/gdcmjpeg/16/CMakeLists.txt
++++ b/Utilities/gdcmjpeg/16/CMakeLists.txt
+@@ -6,7 +6,7 @@ INCLUDE_DIRECTORIES(BEFORE
+ ADD_LIBRARY(${JPEG_LIBRARY_NAME}16 ${JPEG_SOURCES})
+ SET_TARGET_PROPERTIES(${JPEG_LIBRARY_NAME}16 PROPERTIES ${JPEG_LIBRARY_PROPERTIES})
+ IF(NOT JPEG_INSTALL_NO_LIBRARIES)
+-  INSTALL(TARGETS ${JPEG_LIBRARY_NAME}16
++	INSTALL(TARGETS ${JPEG_LIBRARY_NAME}16 EXPORT gdcm-targets
+     RUNTIME DESTINATION ${JPEG_INSTALL_BIN_DIR} COMPONENT Applications
+     LIBRARY DESTINATION ${JPEG_INSTALL_LIB_DIR} COMPONENT Libraries ${NAMELINK_SKIP}
+     ARCHIVE DESTINATION ${JPEG_INSTALL_LIB_DIR} COMPONENT Development
+diff --git a/Utilities/gdcmjpeg/8/CMakeLists.txt b/Utilities/gdcmjpeg/8/CMakeLists.txt
+index fea3dc1..dfbbe34 100644
+--- a/Utilities/gdcmjpeg/8/CMakeLists.txt
++++ b/Utilities/gdcmjpeg/8/CMakeLists.txt
+@@ -6,7 +6,7 @@ INCLUDE_DIRECTORIES(BEFORE
+ ADD_LIBRARY(${JPEG_LIBRARY_NAME}8 ${JPEG_SOURCES})
+ SET_TARGET_PROPERTIES(${JPEG_LIBRARY_NAME}8 PROPERTIES ${JPEG_LIBRARY_PROPERTIES})
+ IF(NOT JPEG_INSTALL_NO_LIBRARIES)
+-  INSTALL(TARGETS ${JPEG_LIBRARY_NAME}8
++	INSTALL(TARGETS ${JPEG_LIBRARY_NAME}8 EXPORT gdcm-targets
+     RUNTIME DESTINATION ${JPEG_INSTALL_BIN_DIR} COMPONENT Applications
+     LIBRARY DESTINATION ${JPEG_INSTALL_LIB_DIR} COMPONENT Libraries ${NAMELINK_SKIP}
+     ARCHIVE DESTINATION ${JPEG_INSTALL_LIB_DIR} COMPONENT Development
+diff --git a/Utilities/gdcmopenjpeg/libopenjpeg/CMakeLists.txt b/Utilities/gdcmopenjpeg/libopenjpeg/CMakeLists.txt
+index a4b234b..2c5ad59 100644
+--- a/Utilities/gdcmopenjpeg/libopenjpeg/CMakeLists.txt
++++ b/Utilities/gdcmopenjpeg/libopenjpeg/CMakeLists.txt
+@@ -36,7 +36,7 @@ SET_TARGET_PROPERTIES(${OPENJPEG_LIBRARY_NAME} PROPERTIES ${OPENJPEG_LIBRARY_PRO
+ 
+ # Install library
+ IF(NOT OPENJPEG_INSTALL_NO_LIBRARIES)
+-  INSTALL(TARGETS ${OPENJPEG_LIBRARY_NAME}
++	INSTALL(TARGETS ${OPENJPEG_LIBRARY_NAME} EXPORT gdcm-targets
+     RUNTIME DESTINATION ${OPENJPEG_INSTALL_BIN_DIR} COMPONENT Applications
+     LIBRARY DESTINATION ${OPENJPEG_INSTALL_LIB_DIR} COMPONENT Libraries
+     ARCHIVE DESTINATION ${OPENJPEG_INSTALL_LIB_DIR} COMPONENT Development
+diff --git a/Utilities/gdcmuuid/CMakeLists.txt b/Utilities/gdcmuuid/CMakeLists.txt
+index b5bc0d9..450ab50 100644
+--- a/Utilities/gdcmuuid/CMakeLists.txt
++++ b/Utilities/gdcmuuid/CMakeLists.txt
+@@ -118,7 +118,7 @@ IF(NOT UUID_INSTALL_LIB_DIR)
+ ENDIF(NOT UUID_INSTALL_LIB_DIR)
+ 
+ IF(NOT UUID_INSTALL_NO_LIBRARIES)
+-  INSTALL(TARGETS ${UUID_LIBRARY_NAME}
++	INSTALL(TARGETS ${UUID_LIBRARY_NAME} EXPORT gdcm-targets
+     RUNTIME DESTINATION ${UUID_INSTALL_BIN_DIR} COMPONENT Applications
+     LIBRARY DESTINATION ${UUID_INSTALL_LIB_DIR} COMPONENT Libraries
+     ARCHIVE DESTINATION ${UUID_INSTALL_LIB_DIR} COMPONENT Development
+diff --git a/Wrapping/C/CMakeLists.txt b/Wrapping/C/CMakeLists.txt
+index 71932c5..c6238df 100644
+--- a/Wrapping/C/CMakeLists.txt
++++ b/Wrapping/C/CMakeLists.txt
+@@ -3,6 +3,11 @@ SET(CWRAPPER_SRCS
+   gdcmCReader.cxx
+ )
+ 
++IF(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" AND ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64" )
++	SET_SOURCE_FILES_PROPERTIES(${CWRAPPER_SRCS}
++		PROPERTIES COMPILE_FLAGS "-fPIC")
++ENDIF(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" AND ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64" )
++
+ INCLUDE_DIRECTORIES(
+   "${GDCM_BINARY_DIR}/Source/Common"
+   "${GDCM_SOURCE_DIR}/Source/Common"
+@@ -17,7 +22,7 @@ TARGET_LINK_LIBRARIES(gdcmCWRAPPER gdcmCommon)
+ SET_TARGET_PROPERTIES(gdcmCWRAPPER PROPERTIES ${GDCM_LIBRARY_PROPERTIES})
+ IF(NOT GDCM_INSTALL_NO_LIBRARIES)
+   # Runtime
+-  INSTALL(TARGETS gdcmCWRAPPER
++  INSTALL(TARGETS gdcmCWRAPPER EXPORT gdcm-targets
+     RUNTIME DESTINATION ${GDCM_INSTALL_BIN_DIR} COMPONENT Runtime
+     LIBRARY DESTINATION ${GDCM_INSTALL_LIB_DIR} COMPONENT Runtime ${NAMELINK_SKIP}
+     ARCHIVE DESTINATION ${GDCM_INSTALL_LIB_DIR} COMPONENT Development
