@@ -771,7 +771,7 @@ SET(GDCM_LIBRARY_DIRS ${LIBRARY_OUTPUT_PATH})
 
 add_library(gdcm INTERFACE)
 target_link_libraries(gdcm INTERFACE gdcmCommon gdcmjpeg8 gdcmjpeg12
-    gdcmjpeg16 gdcmopenjpeg gdcmuuid gdcmCWRAPPER gdcmDICT gdcmDSED
+    gdcmjpeg16 gdcmopenjpeg gdcmCWRAPPER gdcmDICT gdcmDSED
     gdcmIOD gdcmMSFF)
 if (NOT GDCM_USE_SYSTEM_ZLIB)
     target_link_libraries(gdcm INTERFACE gdcmzlib) 
