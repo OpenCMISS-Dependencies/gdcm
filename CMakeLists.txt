@@ -1,12 +1,13 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0) # Sorry I want the cpack/component
-PROJECT(GDCM VERSION 2.0.12 LANGUAGES C CXX)
+cmake_minimum_required(VERSION 3.0)
+project(GDCM VERSION 2.0.12 LANGUAGES C CXX)
 SET(CMAKE_POSITION_INDEPENDENT_CODE YES)
+
 #-----------------------------------------------------------------------------
 # New cmake policy thingy
-IF(COMMAND CMAKE_POLICY)
+if(COMMAND CMAKE_POLICY)
   CMAKE_POLICY(SET CMP0003 NEW)
-ENDIF(COMMAND CMAKE_POLICY)
-MARK_AS_ADVANCED(CMAKE_BACKWARDS_COMPATIBILITY CMAKE_BUILD_TYPE CMAKE_INSTALL_PREFIX)
+endif()
+
 SET(GDCM_CMAKE_DIR "${GDCM_SOURCE_DIR}/CMake" CACHE INTERNAL "")
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${GDCM_CMAKE_DIR}")
 
@@ -44,7 +45,7 @@ STRING(COMPARE EQUAL "${GDCM_SOURCE_DIR}" "${PARENTDIR}" INSOURCESUBDIR)
 IF(INSOURCE OR INSOURCESUBDIR)
   MESSAGE(FATAL_ERROR "GDCM requires an out of source Build. "
     "Please create a separate binary directory and run CMake there.")
-ENDIF(INSOURCE OR INSOURCESUBDIR)
+ENDIF()
 
 #-----------------------------------------------------------------------------
 SET(GDCM_MAJOR_VERSION ${PROJECT_VERSION_MAJOR})
@@ -58,16 +59,13 @@ SET(GDCM_LIBRARY_PROPERTIES ${GDCM_LIBRARY_PROPERTIES}
   VERSION "${GDCM_VERSION}"
   SOVERSION "${GDCM_API_VERSION}"
 )
-#SET(GDCM_EXECUTABLE_PROPERTIES ${GDCM_EXECUTABLE_PROPERTIES}
-#  VERSION "${GDCM_MAJOR_VERSION}.${GDCM_MINOR_VERSION}"
-#)
 SET(GDCM_EXECUTABLE_PROPERTIES)
 IF(GDCM_NO_EXECUTABLE_PROPERTIES)
   SET(GDCM_EXECUTABLE_PROPERTIES)
   SET(python_site_package "python/site-packages")
-ELSE(GDCM_NO_EXECUTABLE_PROPERTIES)
+ELSE()
   SET(python_site_package "")
-ENDIF(GDCM_NO_EXECUTABLE_PROPERTIES)
+ENDIF()
 
 #-----------------------------------------------------------------------------
 INCLUDE(${GDCM_SOURCE_DIR}/CMake/UseCopyright.cmake)
@@ -88,9 +86,9 @@ IF(GDCM_MINOR_VERSION MATCHES "[02468]$")
   # Since we are on a release branch, chance is that people don't care about testing
   # let's disable it for them
   SET(GDCM_BUILD_TESTING_DEFAULT OFF)
-ELSE(GDCM_MINOR_VERSION MATCHES "[02468]$")
+ELSE()
   SET(GDCM_BUILD_TESTING_DEFAULT ON)
-ENDIF(GDCM_MINOR_VERSION MATCHES "[02468]$")
+ENDIF()
 
 #-----------------------------------------------------------------------------
 # VS 2005 declared that some C functions were deprecated...
@@ -293,13 +291,11 @@ OPTION(GDCM_USE_PVRG "Use pvrg lib, only turn it on if you know what you are doi
 MARK_AS_ADVANCED(GDCM_USE_PVRG)
 
 IF(GDCM_USE_SYSTEM_ZLIB)
-  # If user say so, then this is a requirement !
-  FIND_PACKAGE(ZLIB REQUIRED)
-  INCLUDE_DIRECTORIES( ${ZLIB_INCLUDE_DIR} )
-  SET(GDCM_ZLIB_LIBRARIES ${ZLIB_LIBRARIES})
-ELSE(GDCM_USE_SYSTEM_ZLIB)
-  SET(GDCM_ZLIB_LIBRARIES "gdcmzlib")
-ENDIF(GDCM_USE_SYSTEM_ZLIB)
+  find_package(ZLIB ${ZLIB_VERSION} REQUIRED)
+  set(GDCM_ZLIB_LIBRARIES zlib)
+ELSE()
+  set(GDCM_ZLIB_LIBRARIES "gdcmzlib")
+ENDIF()
 
 #IF(GDCM_USE_SYSTEM_POLARSSL)
 #  # If user say so, then this is a requirement !
@@ -409,14 +405,14 @@ ENDIF(GDCM_WRAP_CSHARP)
 SET(GDCM_LIBRARY_DIR ${LIBRARY_OUTPUT_PATH}/${CMAKE_CFG_INTDIR})
 SET(GDCM_EXECUTABLE_DIR ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR})
 
-SUBDIRS(Wrapping)
+add_subdirectory(Wrapping)
 IF(GDCM_WRAP_CSHARP)
-  ADD_SUBDIRECTORY(Wrapping/Csharp)
-ENDIF(GDCM_WRAP_CSHARP)
+  add_subdirectory(Wrapping/Csharp)
+ENDIF()
 
 # After Wrapping please
 IF(BUILD_EXAMPLES)
-  SUBDIRS(Examples)
+  add_subdirectory(Examples)
 ENDIF(BUILD_EXAMPLES)
 
 #-----------------------------------------------------------------------------
@@ -443,12 +439,9 @@ CHECK_INCLUDE_FILE("pthread.h"      CMAKE_HAVE_PTHREAD_H)
 INCLUDE (${CMAKE_ROOT}/Modules/TestBigEndian.cmake)
 TEST_BIG_ENDIAN(GDCM_WORDS_BIGENDIAN)
 
-
-SUBDIRS(
-  Utilities
-  Source
-  )
-
+add_subdirectory(Utilities)
+add_subdirectory(Source)
+  
 IF(BUILD_TESTING)
   CONFIGURE_FILE(${GDCM_SOURCE_DIR}/CMake/CTestCustom.ctest.in
       ${GDCM_BINARY_DIR}/CMake/CTestCustom.ctest @ONLY)
@@ -550,7 +543,7 @@ IF(EXISTS "${CMAKE_ROOT}/Modules/CPack.cmake")
     SET(CPACK_SOURCE_STRIP_FILES "")
     SET(CPACK_PACKAGE_EXECUTABLES "gdcmviewer" "VIEWER")
 
-  ENDIF(WIN32 AND NOT UNIX)
+  ENDIF()
 
   # cygwin stff also copied from cmake
   #IF(NOT DEFINED CPACK_PACKAGE_FILE_NAME)
@@ -776,7 +769,23 @@ ENDIF(GDCM_USE_VTK)
 SET(GDCM_LIBRARY_DIRS ${LIBRARY_OUTPUT_PATH})
 #SUBDIRS(CMake/ExportConfiguration)
 
-INSTALL(EXPORT gdcm-abi-config 
+add_library(gdcm INTERFACE)
+target_link_libraries(gdcm INTERFACE gdcmCommon gdcmjpeg8 gdcmjpeg12
+    gdcmjpeg16 gdcmopenjpeg gdcmuuid gdcmCWRAPPER gdcmDICT gdcmDSED
+    gdcmIOD gdcmMSFF)
+if (NOT GDCM_USE_SYSTEM_ZLIB)
+    target_link_libraries(gdcm INTERFACE gdcmzlib) 
+endif()
+if (NOT UUID_FOUND)
+    target_link_libraries(gdcm INTERFACE gdcmuuid) 
+endif()
+if (NOT GDCM_USE_SYSTEM_EXPAT)
+    target_link_libraries(gdcm INTERFACE gdcmexpat) 
+endif()
+install(TARGETS gdcm 
+    EXPORT gdcm-abi-config
+    INCLUDES DESTINATION ${GDCM_INSTALL_INCLUDE_DIR})
+INSTALL(EXPORT gdcm-abi-config
         DESTINATION ${GDCM_CMAKE_PACKAGE_DIR})
 INCLUDE(CMakePackageConfigHelpers)
 WRITE_BASIC_PACKAGE_VERSION_FILE(${CMAKE_CURRENT_BINARY_DIR}/gdcm-abi-config-version.cmake
