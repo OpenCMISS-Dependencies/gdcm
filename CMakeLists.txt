@@ -1,5 +1,5 @@
-PROJECT(GDCM)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6) # Sorry I want the cpack/component
+PROJECT(GDCM)
 #-----------------------------------------------------------------------------
 # New cmake policy thingy
 IF(COMMAND CMAKE_POLICY)
