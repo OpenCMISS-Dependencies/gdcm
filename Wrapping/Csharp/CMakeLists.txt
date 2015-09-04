@@ -32,9 +32,9 @@ INCLUDE_DIRECTORIES(
 SET_SOURCE_FILES_PROPERTIES(gdcm.i PROPERTIES CPLUSPLUS ON)
 
 # Some old swig 1.3 did not support this option:
-#SET(CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}")
+#set(CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}")
 
-SET(CMAKE_SWIG_FLAGS "-namespace gdcm")
+set(CMAKE_SWIG_FLAGS "-namespace gdcm")
 SEPARATE_ARGUMENTS(CMAKE_SWIG_FLAGS)
 # libgdksharpglue.so
 SWIG_ADD_MODULE(gdcmsharpglue csharp gdcm.i)
@@ -44,15 +44,15 @@ SWIG_LINK_LIBRARIES(gdcmsharpglue gdcmMSFF
 #  ${JAVA_JVM_LIB_PATH}
 ) 
 # Stupid cmake-swig module is doing that for us, when not needed
-IF(UNIX)
+if(UNIX)
   SET_TARGET_PROPERTIES(${SWIG_MODULE_gdcmsharpglue_REAL_NAME} PROPERTIES PREFIX "lib")
-ENDIF(UNIX)
+endif()
 
 
 #Module are always place in the library destination
 #but for poor win32 user I decided to place them
 # right next to the other dlls
-IF(NOT GDCM_INSTALL_NO_LIBRARIES)
+if(NOT GDCM_INSTALL_NO_LIBRARIES)
   INSTALL(TARGETS ${SWIG_MODULE_gdcmsharpglue_REAL_NAME}
     RUNTIME DESTINATION ${GDCM_INSTALL_BIN_DIR} COMPONENT Applications
     LIBRARY DESTINATION ${GDCM_INSTALL_LIB_DIR} COMPONENT Libraries
@@ -60,11 +60,11 @@ IF(NOT GDCM_INSTALL_NO_LIBRARIES)
   ${CPACK_NAMELINK_TYPE}
   )
 
-ENDIF(NOT GDCM_INSTALL_NO_LIBRARIES)
+endif()
 
 
 
-##IF(UNIX)
+##if(UNIX)
 ##  FIND_PACKAGE(MONO REQUIRED)
 #FIND_PACKAGE(CSharp REQUIRED)
 #INCLUDE(${CSharp_USE_FILE})
@@ -93,12 +93,12 @@ ENDIF(NOT GDCM_INSTALL_NO_LIBRARIES)
 #  )
 #
 ## For some reason csc v1.1.4322 does not like full path, so I need to locally copy it to the binary dir
-#IF(WIN32)
+#if(WIN32)
 #  CONFIGURE_FILE(
 #    ${CMAKE_CURRENT_SOURCE_DIR}/HelloWorld.cs
 #    ${CMAKE_CURRENT_BINARY_DIR}/HelloWorld.cs
 #  )
-#ENDIF(WIN32)
+#endif()
 ##CSHARP_ADD_EXECUTABLE(HelloWorld HelloWorld.cs)
 ##CSHARP_LINK_LIBRARIES(HelloWorld gdcm-sharp)
 ##ADD_CUSTOM_TARGET(CSHARP_EXECUTABLE_HelloWorld ALL
@@ -118,15 +118,15 @@ ENDIF(NOT GDCM_INSTALL_NO_LIBRARIES)
 ##  COMMENT "building gdcm-sharp.dll"
 ##)
 #
-#IF(BUILD_TESTING)
+#if(BUILD_TESTING)
 #  ADD_TEST(HelloWorldCSharp ${CMAKE_CSHARP_INTERPRETER} ${CMAKE_CURRENT_BINARY_DIR}/HelloWorld.exe ${GDCM_DATA_ROOT}/test.acr)
-#ENDIF(BUILD_TESTING)
+#endif()
 #
-##ENDIF(UNIX)
+##endif()
 
-SET(OLDSTYLECSHARP 1)
+set(OLDSTYLECSHARP 1)
 
-IF(OLDSTYLECSHARP)
+if(OLDSTYLECSHARP)
   CONFIGURE_FILE(
     ${CMAKE_CURRENT_SOURCE_DIR}/AssemblyInfo.cs.in
     ${CMAKE_CURRENT_BINARY_DIR}/AssemblyInfo.cs
@@ -157,7 +157,7 @@ IF(OLDSTYLECSHARP)
     COMMENT "csc *.cs"
   )
 
-IF(BUILD_EXAMPLES)
+if(BUILD_EXAMPLES)
 # building HelloWorld:
   ADD_CUSTOM_COMMAND(
     OUTPUT ${GDCM_EXECUTABLE_DIR}/HelloWorld.exe
@@ -167,7 +167,7 @@ IF(BUILD_EXAMPLES)
             ${CMAKE_CURRENT_SOURCE_DIR}/HelloWorld.cs
     COMMENT "Create HelloWorld.exe"
   )
-ENDIF(BUILD_EXAMPLES)
+endif()
 
   ADD_CUSTOM_COMMAND(
     OUTPUT  ${GDCM_LIBRARY_DIR}/gdcm-sharp.dll.config
@@ -177,12 +177,12 @@ ENDIF(BUILD_EXAMPLES)
   )
 
 
-#IF(WIN32)
+#if(WIN32)
 #  CONFIGURE_FILE(
 #    ${CMAKE_CURRENT_SOURCE_DIR}/HelloWorld.cs
 #    ${CMAKE_CURRENT_BINARY_DIR}/HelloWorld.cs
 #  )
-#ENDIF(WIN32)
+#endif()
 
 #  $ export MONO_LOG_LEVEL="debug"; export MONO_LOG_MASK="dll"
 # $ export LD_LIBRARY_PATH=/home/mmalaterre/Projects/gdcm/debug-gcc43/Wrapping/Csharp/:/home/mmalaterre/Projects/gdcm/debug-gcc43/bin   
@@ -193,7 +193,7 @@ ADD_CUSTOM_TARGET(GDCMCSharp ALL
   COMMENT "building gdcm-sharp.dll"
 )
 
-IF(BUILD_EXAMPLES)
+if(BUILD_EXAMPLES)
 ADD_CUSTOM_TARGET(GDCMCSharpExample ALL
   DEPENDS 
     ${GDCM_EXECUTABLE_DIR}/HelloWorld.exe
@@ -202,32 +202,32 @@ ADD_CUSTOM_TARGET(GDCMCSharpExample ALL
 #add_dependencies(GDCMCSharpExample
 # GDCMCSharp)
 
-ENDIF(BUILD_EXAMPLES)
+endif()
 
 
 
-ELSE(OLDSTYLECSHARP)
-ENDIF(OLDSTYLECSHARP)
+else()
+endif()
 
 # Cannot do test here as CTest has not yet been included. Simply construct example and hope someone else
 # will call the test for us...
-#IF(BUILD_TESTING)
+#if(BUILD_TESTING)
 #  ADD_TEST(HelloWorldCSharp ${CMAKE_CSHARP_INTERPRETER} ${GDCM_EXECUTABLE_DIR}/HelloWorld.exe ${GDCM_DATA_ROOT}/012345.002.050.dcm)
-#ENDIF(BUILD_TESTING)
+#endif()
 
-IF(NOT GDCM_INSTALL_NO_LIBRARIES)
+if(NOT GDCM_INSTALL_NO_LIBRARIES)
   INSTALL(TARGETS ${SWIG_MODULE_gdcmsharpglue_REAL_NAME}
     RUNTIME DESTINATION ${GDCM_INSTALL_BIN_DIR} COMPONENT CSharpModule
     LIBRARY DESTINATION ${GDCM_INSTALL_LIB_DIR} COMPONENT CSharpModule
     ARCHIVE DESTINATION ${GDCM_INSTALL_LIB_DIR} COMPONENT CSharpModule
   ${CPACK_NAMELINK_TYPE}
   )
-SET(GDCM_LIBRARY_DIR2 ${LIBRARY_OUTPUT_PATH}/\${BUILD_TYPE})
+set(GDCM_LIBRARY_DIR2 ${LIBRARY_OUTPUT_PATH}/\${BUILD_TYPE})
   # because gdcm-sharp.dll is constructed with custom commands, it need the INSTALL(FILES signature:
   INSTALL(FILES 
     ${GDCM_LIBRARY_DIR2}/gdcm-sharp.dll
     ${GDCM_LIBRARY_DIR2}/gdcm-sharp.dll.config
     DESTINATION ${GDCM_INSTALL_LIB_DIR} COMPONENT CSharpModule
   )
-ENDIF(NOT GDCM_INSTALL_NO_LIBRARIES)
+endif()
 

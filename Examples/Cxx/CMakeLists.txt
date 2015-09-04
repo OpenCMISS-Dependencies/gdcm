@@ -13,7 +13,7 @@ INCLUDE_DIRECTORIES(
 
 FIND_PACKAGE(MAGIC)
 
-SET(EXAMPLES_SRCS
+set(EXAMPLES_SRCS
   LargeVRDSExplicit
   #AnonymizeAES
   ClinicalTrialAnnotate
@@ -39,25 +39,25 @@ SET(EXAMPLES_SRCS
   GetJPEGSamplePrecision
 )
 
-IF(MAGIC_FOUND)
+if(MAGIC_FOUND)
   INCLUDE_DIRECTORIES(${MAGIC_INCLUDE_DIRS})
   ADD_EXECUTABLE(EncapsulateFileInRawData EncapsulateFileInRawData.cxx)
   TARGET_LINK_LIBRARIES(EncapsulateFileInRawData gdcmMSFF ${MAGIC_LIBRARIES})
-ENDIF(MAGIC_FOUND)
+endif()
 
-IF(GDCM_BUILD_TESTING)
-SET(EXAMPLES_SRCS
+if(GDCM_BUILD_TESTING)
+set(EXAMPLES_SRCS
   ${EXAMPLES_SRCS}
   VolumeSorter
 )
-ENDIF(GDCM_BUILD_TESTING)
+endif()
 
-FOREACH(example ${EXAMPLES_SRCS})
+foreach(example ${EXAMPLES_SRCS})
   ADD_EXECUTABLE(${example} ${example}.cxx)
   TARGET_LINK_LIBRARIES(${example} gdcmMSFF)
-ENDFOREACH(example)
+endforeach()
 
-IF(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
+if(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
 #../../bin/libgdcmDSED.dll.a(d000469.o)(.text+0x0): multiple definition of `gdcm::VL gdcm::Item::GetLength<gdcm::ImplicitDataElement>() const'
 #CMakeFiles/ReadExplicitLengthSQIVR.dir/ReadExplicitLengthSQIVR.obj(.text$_ZNK4gdcm4Item9GetLengthINS_19ImplicitDataElementEEENS_2VLEv[gdcm::VL gdcm::Item::GetLength<gdcm::ImplicitDataElement>() const]+0x0):ReadExplicitLengthSQIVR.cxx: first defined here
 #../../bin/libgdcmDSED.dll.a(d000252.o)(.text+0x0): multiple definition of `std::istream& gdcm::DataSet::ReadNested<gdcm::ImplicitDataElement, gdcm::SwapperDoOp>(std::istream&)'
@@ -67,4 +67,4 @@ IF(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
 #../../bin/libgdcmDSED.dll.a(d000271.o)(.text+0x0): multiple definition of `std::istream& gdcm::DataSet::ReadWithLength<gdcm::ImplicitDataElement, gdcm::SwapperDoOp>(std::istream&, gdcm::VL&)'
 
   SET_TARGET_PROPERTIES( ReadExplicitLengthSQIVR PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition")
-ENDIF(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
+endif()

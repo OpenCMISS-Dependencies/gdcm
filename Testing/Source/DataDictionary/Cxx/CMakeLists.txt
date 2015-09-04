@@ -1,6 +1,6 @@
 # Define the tests for Data Dictionary
 # DICT
-SET(DICT_TEST_SRCS
+set(DICT_TEST_SRCS
   TestDictEntry
   TestDict
   TestGlobal
@@ -25,11 +25,11 @@ ADD_EXECUTABLE(gdcmDICTTests ${DICTTests})
 TARGET_LINK_LIBRARIES(gdcmDICTTests gdcmDICT)
 
 #Don't understand why I need that ??
-SET(GDCM_DICT_TESTS "${EXECUTABLE_OUTPUT_PATH}/gdcmDICTTests")
+set(GDCM_DICT_TESTS "${EXECUTABLE_OUTPUT_PATH}/gdcmDICTTests")
 
 # Loop over files and create executables
-FOREACH(name ${DICT_TEST_SRCS})
+foreach(name ${DICT_TEST_SRCS})
   ADD_TEST(${name} ${GDCM_DICT_TESTS} ${name})
-ENDFOREACH(name)
+endforeach()
 
 

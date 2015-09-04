@@ -13,7 +13,7 @@ INCLUDE_DIRECTORIES(
 
 #-----------------------------------------------------------------------------
 # DICOM dictionary stuff
-#SET(PREP_DICT_SRCS
+#set(PREP_DICT_SRCS
 #  ${GDCM_SOURCE_DIR}/Source/DataDictionary/gdcmDictConverter.cxx
 #  ${GDCM_SOURCE_DIR}/Source/DataDictionary/gdcmPrepDict.cxx
 #  )
@@ -36,18 +36,18 @@ INCLUDE_DIRECTORIES(
 #    PrepGroupName
 #    LOCATION
 #    )
-#SET(DICT_LIST
+#set(DICT_LIST
 #  DICOMV3
 #  NIH
 #  SPI
 #  )
 #
 ## List of file needed to get all dict into c++ code
-#SET(DICT_SRCS)
-#SET(DEFAULT_DICTS)
-#FOREACH(dict ${DICT_LIST})
-#  SET(CXX_DICT ${GDCM_BINARY_DIR}/Source/DataDictionary/gdcm${dict}.cxx)
-#  SET(DICT_SRCS ${DICT_SRCS} ${CXX_DICT})
+#set(DICT_SRCS)
+#set(DEFAULT_DICTS)
+#foreach(dict ${DICT_LIST})
+#  set(CXX_DICT ${GDCM_BINARY_DIR}/Source/DataDictionary/gdcm${dict}.cxx)
+#  set(DICT_SRCS ${DICT_SRCS} ${CXX_DICT})
 #  ADD_CUSTOM_COMMAND(
 #    OUTPUT    ${CXX_DICT}
 #    COMMAND   ${PREP_DICT}
@@ -58,7 +58,7 @@ INCLUDE_DIRECTORIES(
 #              ${PREP_DICT}
 #    COMMENT   "Generating gdcm${dict}.cxx based on ${dict}.dic"
 #    )
-#ENDFOREACH(dict)
+#endforeach()
 #
 #ADD_CUSTOM_COMMAND(
 #  OUTPUT    ${GDCM_BINARY_DIR}/Source/DataDictionary/gdcmDefaultGroupNames.cxx
@@ -81,7 +81,7 @@ INCLUDE_DIRECTORIES(
 #  @ONLY
 #  )
 
-SET(DICT_SRCS
+set(DICT_SRCS
   #${DICT_SRCS} # All the dicts cxx resources
   gdcmDicts.cxx
   gdcmDefaultDicts.cxx # pseudo generated file
@@ -94,16 +94,16 @@ SET(DICT_SRCS
   gdcmCSAHeaderDefaultDicts.cxx
   )
 
-IF(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" AND ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64" )
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" AND ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64" )
 	SET_SOURCE_FILES_PROPERTIES(${DICT_SRCS}
 		PROPERTIES COMPILE_FLAGS "-fPIC")
-ENDIF(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" AND ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64" )
+endif()
 
 #MESSAGE( ${DICT_SRCS} )
 ADD_LIBRARY(gdcmDICT ${DICT_SRCS})
 SET_TARGET_PROPERTIES(gdcmDICT PROPERTIES ${GDCM_LIBRARY_PROPERTIES})
 TARGET_LINK_LIBRARIES(gdcmDICT gdcmDSED gdcmIOD)
-IF(NOT GDCM_INSTALL_NO_LIBRARIES)
+if(NOT GDCM_INSTALL_NO_LIBRARIES)
   # Runtime
   INSTALL(TARGETS gdcmDICT EXPORT gdcm-abi-config
     RUNTIME DESTINATION ${GDCM_INSTALL_BIN_DIR} COMPONENT Applications
@@ -114,16 +114,16 @@ IF(NOT GDCM_INSTALL_NO_LIBRARIES)
   #INSTALL(TARGETS gdcmDICT
   #  LIBRARY DESTINATION ${GDCM_INSTALL_LIB_DIR} COMPONENT Development ${NAMELINK_ONLY}
   #)
-ENDIF(NOT GDCM_INSTALL_NO_LIBRARIES)
+endif()
 
-IF(NOT GDCM_INSTALL_NO_DEVELOPMENT)
+if(NOT GDCM_INSTALL_NO_DEVELOPMENT)
   FILE(GLOB header_files "*.h")
   INSTALL(FILES ${header_files}
     DESTINATION ${GDCM_INSTALL_INCLUDE_DIR} COMPONENT Headers
   )
-ENDIF(NOT GDCM_INSTALL_NO_DEVELOPMENT)
+endif()
 
-SET(XML_FILES
+set(XML_FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/CSAHeader.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/DICOMV3.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/Part6.xml

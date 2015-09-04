@@ -1,5 +1,5 @@
-SUBDIRS(Cxx)
+add_subdirectory(Cxx)
 
-IF(GDCM_WRAP_PYTHON AND VTK_WRAP_PYTHON)
-  SUBDIRS(Python)
-ENDIF(GDCM_WRAP_PYTHON AND VTK_WRAP_PYTHON)
+if(GDCM_WRAP_PYTHON AND VTK_WRAP_PYTHON)
+  add_subdirectory(Python)
+endif()

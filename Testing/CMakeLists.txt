@@ -11,7 +11,7 @@ SUBDIRS(
 # ctest...well except one, the case where a user set BUILD_TESTING=OFF
 # since this would deactivate the dashboard and would not submit...doh!
 # So instead let's create a test that would build gdcm with this option
-IF(UNIX AND GDCM_TEST_BOOTSTRAP)
+if(UNIX AND GDCM_TEST_BOOTSTRAP)
   ADD_TEST(BuildGDCM ${CMAKE_CTEST_COMMAND}
     #${VTK_EXAMPLE_TEST_CONFIG_TYPE}
     --build-and-test ${GDCM_SOURCE_DIR} ${GDCM_BINARY_DIR}/GDCMLocal
@@ -32,7 +32,7 @@ IF(UNIX AND GDCM_TEST_BOOTSTRAP)
     --build-noclean
     --build-target install
   )
-ENDIF(UNIX AND GDCM_TEST_BOOTSTRAP)
+endif()
 
 
 

@@ -24,11 +24,11 @@
 #  For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 #
 
-IF( NOT DCMTK_FOUND )
-  SET( DCMTK_DIR "/usr/include/dcmtk/"
+if( NOT DCMTK_FOUND )
+  set( DCMTK_DIR "/usr/include/dcmtk/"
     CACHE PATH "Root of DCMTK source tree (optional)." )
   MARK_AS_ADVANCED( DCMTK_DIR )
-ENDIF( NOT DCMTK_FOUND )
+endif()
 
 
 FIND_PATH( DCMTK_config_INCLUDE_DIR osconfig.h
@@ -97,54 +97,54 @@ FIND_LIBRARY(DCMTK_dcmnet_LIBRARY dcmnet
   )
 
 
-IF( DCMTK_config_INCLUDE_DIR )
-IF( DCMTK_ofstd_INCLUDE_DIR )
-IF( DCMTK_ofstd_LIBRARY )
-IF( DCMTK_dcmdata_INCLUDE_DIR )
-IF( DCMTK_dcmdata_LIBRARY )
-IF( DCMTK_dcmimgle_INCLUDE_DIR )
-IF( DCMTK_dcmimgle_LIBRARY )
+if( DCMTK_config_INCLUDE_DIR )
+if( DCMTK_ofstd_INCLUDE_DIR )
+if( DCMTK_ofstd_LIBRARY )
+if( DCMTK_dcmdata_INCLUDE_DIR )
+if( DCMTK_dcmdata_LIBRARY )
+if( DCMTK_dcmimgle_INCLUDE_DIR )
+if( DCMTK_dcmimgle_LIBRARY )
 
-  SET( DCMTK_FOUND "YES" )
-  SET( DCMTK_INCLUDE_DIR
+  set( DCMTK_FOUND "YES" )
+  set( DCMTK_INCLUDE_DIR
     ${DCMTK_config_INCLUDE_DIR}
     ${DCMTK_ofstd_INCLUDE_DIR}
     ${DCMTK_dcmdata_INCLUDE_DIR}
     ${DCMTK_dcmimgle_INCLUDE_DIR}
   )
 
-  SET( DCMTK_LIBRARIES
+  set( DCMTK_LIBRARIES
     ${DCMTK_dcmimgle_LIBRARY}
     ${DCMTK_dcmdata_LIBRARY}
     ${DCMTK_ofstd_LIBRARY}
     ${DCMTK_config_LIBRARY}
   )
 
-  IF(DCMTK_imagedb_LIBRARY)
-   SET( DCMTK_LIBRARIES
+  if(DCMTK_imagedb_LIBRARY)
+   set( DCMTK_LIBRARIES
    ${DCMTK_LIBRARIES}
    ${DCMTK_imagedb_LIBRARY}
    )
-  ENDIF(DCMTK_imagedb_LIBRARY)
+  endif()
 
-  IF(DCMTK_dcmnet_LIBRARY)
-   SET( DCMTK_LIBRARIES
+  if(DCMTK_dcmnet_LIBRARY)
+   set( DCMTK_LIBRARIES
    ${DCMTK_LIBRARIES}
    ${DCMTK_dcmnet_LIBRARY}
    )
-  ENDIF(DCMTK_dcmnet_LIBRARY)
+  endif()
 
-  IF( WIN32 )
-    SET( DCMTK_LIBRARIES ${DCMTK_LIBRARIES} netapi32 )
-  ENDIF( WIN32 )
+  if( WIN32 )
+    set( DCMTK_LIBRARIES ${DCMTK_LIBRARIES} netapi32 )
+  endif()
 
-ENDIF( DCMTK_dcmimgle_LIBRARY )
-ENDIF( DCMTK_dcmimgle_INCLUDE_DIR )
-ENDIF( DCMTK_dcmdata_LIBRARY )
-ENDIF( DCMTK_dcmdata_INCLUDE_DIR )
-ENDIF( DCMTK_ofstd_LIBRARY )
-ENDIF( DCMTK_ofstd_INCLUDE_DIR )
-ENDIF( DCMTK_config_INCLUDE_DIR )
+endif()
+endif()
+endif()
+endif()
+endif()
+endif()
+endif()
 
 FIND_PROGRAM(DCMTK_DCMDUMP_EXECUTABLE dcmdump
   ${DCMTK_DIR}/bin

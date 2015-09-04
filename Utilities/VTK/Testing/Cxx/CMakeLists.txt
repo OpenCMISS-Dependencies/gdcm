@@ -1,6 +1,6 @@
 # Define the tests for vtk-gdcm
 # vtkGDCM
-SET(VTK_GDCM_TEST_SRCS
+set(VTK_GDCM_TEST_SRCS
   TestvtkGDCMImageReader
   TestvtkGDCMImageReader2
   TestvtkGDCMImageReader4
@@ -8,29 +8,29 @@ SET(VTK_GDCM_TEST_SRCS
   #TestvtkGDCMImageActor
   #TestvtkGDCMImageViewer
 )
-IF( "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" GREATER 4.5 )
-  SET(VTK_GDCM_TEST_SRCS
+if( "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" GREATER 4.5 )
+  set(VTK_GDCM_TEST_SRCS
     ${VTK_GDCM_TEST_SRCS}
     TestvtkGDCMImageWriter
     TestvtkGDCMImageWriter2
     TestvtkGDCMThreadedImageReader2
   )
-ENDIF( "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" GREATER 4.5 )
+endif()
 
 # Need gdcmDataExtra
-IF(GDCM_DATA_EXTRA_ROOT)
-  SET(VTK_GDCM_TEST_SRCS
+if(GDCM_DATA_EXTRA_ROOT)
+  set(VTK_GDCM_TEST_SRCS
     ${VTK_GDCM_TEST_SRCS}
     TestvtkGDCMImageReader3
     TestvtkGDCMPolyDataReader
   )
-ENDIF(GDCM_DATA_EXTRA_ROOT)
-IF(CMAKE_HAVE_PTHREAD_H)
-  SET(VTK_GDCM_TEST_SRCS
+endif()
+if(CMAKE_HAVE_PTHREAD_H)
+  set(VTK_GDCM_TEST_SRCS
     ${VTK_GDCM_TEST_SRCS}
     TestvtkGDCMThreadedImageReader
   )
-ENDIF(CMAKE_HAVE_PTHREAD_H)
+endif()
 
 # Add the include paths
 INCLUDE_DIRECTORIES(
@@ -40,17 +40,17 @@ INCLUDE_DIRECTORIES(
 
 CREATE_TEST_SOURCELIST(vtkGDCMTests gdcmvtkGDCMTests.cxx ${VTK_GDCM_TEST_SRCS})
 ADD_EXECUTABLE(gdcmvtkGDCMTests ${vtkGDCMTests})
-IF( "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" LESS 4.5 )
+if( "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" LESS 4.5 )
   TARGET_LINK_LIBRARIES(gdcmvtkGDCMTests ${VTKGDCM_NAME} vtkRendering)
-ELSE( "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" LESS 4.5 )
+else()
   TARGET_LINK_LIBRARIES(gdcmvtkGDCMTests ${VTKGDCM_NAME} vtkVolumeRendering)
-ENDIF( "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" LESS 4.5 )
+endif()
 
 # Need full path to executable:
-SET(GDCM_VTK_GDCM_TESTS "${EXECUTABLE_OUTPUT_PATH}/gdcmvtkGDCMTests")
+set(GDCM_VTK_GDCM_TESTS "${EXECUTABLE_OUTPUT_PATH}/gdcmvtkGDCMTests")
 
 # Loop over files and create executables
-FOREACH(name ${VTK_GDCM_TEST_SRCS})
+foreach(name ${VTK_GDCM_TEST_SRCS})
   ADD_TEST(${name} ${GDCM_VTK_GDCM_TESTS} ${name})
-ENDFOREACH(name)
+endforeach()
 

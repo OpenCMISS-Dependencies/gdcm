@@ -1,16 +1,16 @@
 # Documentation
 # http://www.stack.nl/~dimitri/doxygen
 # http://www.stack.nl/~dimitri/doxygen/commands.html#cmdsa
-IF(GDCM_DOCUMENTATION)
+if(GDCM_DOCUMENTATION)
 
   FIND_PACKAGE(Doxygen REQUIRED)
 
-  IF(GDCM_DOXYGEN_NO_FOOTER)
-    SET(GDCM_HTML_FOOTER)
-  ELSE(GDCM_DOXYGEN_NO_FOOTER)
+  if(GDCM_DOXYGEN_NO_FOOTER)
+    set(GDCM_HTML_FOOTER)
+  else()
     # Otherwise use gdcm/piwik/sf.net footer:
-    SET(GDCM_HTML_FOOTER ${GDCM_SOURCE_DIR}/Utilities/doxygen/footer.html)
-  ENDIF(GDCM_DOXYGEN_NO_FOOTER)
+    set(GDCM_HTML_FOOTER ${GDCM_SOURCE_DIR}/Utilities/doxygen/footer.html)
+  endif()
   CONFIGURE_FILE(
     ${GDCM_SOURCE_DIR}/Utilities/doxygen/doxyfile.in
     ${GDCM_BINARY_DIR}/Utilities/doxygen/Doxyfile
@@ -31,27 +31,27 @@ IF(GDCM_DOCUMENTATION)
     ${GDCM_BINARY_DIR}/Utilities/doxygen/TestsList.txt
     @ONLY
   )
-  IF(GDCM_MINOR_VERSION MATCHES "[02468]$")
-    SET(GDCM_DOC_PDF_LINK
-      "http://gdcm.sourceforge.net/${GDCM_MAJOR_VERSION}.${GDCM_MINOR_VERSION}/gdcm-${GDCM_VERSION}.pdf"
+  if(GDCM_VERSION_MINOR MATCHES "[02468]$")
+    set(GDCM_DOC_PDF_LINK
+      "http://gdcm.sourceforge.net/${GDCM_VERSION_MAJOR}.${GDCM_VERSION_MINOR}/gdcm-${GDCM_VERSION}.pdf"
     )
-    SET(GDCM_DOC_TARBALL_LINK 
-      "http://gdcm.sourceforge.net/${GDCM_MAJOR_VERSION}.${GDCM_MINOR_VERSION}/gdcm-${GDCM_VERSION}-doc.tar.gz"
+    set(GDCM_DOC_TARBALL_LINK 
+      "http://gdcm.sourceforge.net/${GDCM_VERSION_MAJOR}.${GDCM_VERSION_MINOR}/gdcm-${GDCM_VERSION}-doc.tar.gz"
     )
-  ELSE(GDCM_MINOR_VERSION MATCHES "[02468]$")
-    SET(GDCM_DOC_PDF_LINK
+  else()
+    set(GDCM_DOC_PDF_LINK
       "http://gdcm.sourceforge.net/gdcm-${GDCM_VERSION}.pdf"
     )
-    SET(GDCM_DOC_TARBALL_LINK 
+    set(GDCM_DOC_TARBALL_LINK 
       "http://gdcm.sourceforge.net/gdcm-${GDCM_VERSION}-doc.tar.gz"
     )
-  ENDIF(GDCM_MINOR_VERSION MATCHES "[02468]$")
+  endif()
   CONFIGURE_FILE(
     ${GDCM_SOURCE_DIR}/Utilities/doxygen/README.txt.in
     ${GDCM_BINARY_DIR}/Utilities/doxygen/README.txt
     @ONLY
   )
-  SET(GDCM_DOC_TARBALL
+  set(GDCM_DOC_TARBALL
     ${CMAKE_CURRENT_BINARY_DIR}/gdcm-${GDCM_VERSION}-doc.tar.gz
   )
   # epstopdf is needed: sudo apt-get install texlive-extra-utils
@@ -77,7 +77,7 @@ IF(GDCM_DOCUMENTATION)
 
   # PDF building part:
   # When building latex, we have to run a custom command to produce the pdf file:
-  IF(UNIX AND GDCM_PDF_DOCUMENTATION)
+  if(UNIX AND GDCM_PDF_DOCUMENTATION)
     FIND_PROGRAM(PDFOPT_EXECUTABLE pdfopt)
     FIND_PROGRAM(SED_EXECUTABLE sed)
     FIND_PACKAGE(LATEX REQUIRED)
@@ -89,7 +89,7 @@ IF(GDCM_DOCUMENTATION)
     #ADD_CUSTOM_COMMAND(
     #  ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/patchtex.cmake 
     #) 
-    # TODO, FOREACH(*.tex)
+    # TODO, foreach(*.tex)
     # sed -i -e "/home/mmalaterre/Projects/" ...
     STRING(REPLACE "/" "\\/" sed_gdcm_source_dir ${GDCM_SOURCE_DIR})
     #MESSAGE(${sed_gdcm_source_dir})
@@ -125,14 +125,14 @@ ${CMAKE_CURRENT_BINARY_DIR}/latex/Makefile
       DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/latex/gdcm-${GDCM_VERSION}.pdf
       COMMENT  "GDCM: Executing GDCMDoxygenPDF"
     )
-  ELSE(UNIX AND GDCM_PDF_DOCUMENTATION)
+  else()
     # make DoxygenDoc depends on the final tarball thus all file are garantee to be generated
     ADD_CUSTOM_TARGET(GDCMDoxygenDoc
       ALL
       DEPENDS ${GDCM_DOC_TARBALL}
       COMMENT  "GDCM: Executing GDCMDoxygenDoc"
     )
-  ENDIF(UNIX AND GDCM_PDF_DOCUMENTATION)
+  endif()
 
   # Install html pages:
   #INSTALL(FILES 
@@ -169,14 +169,14 @@ ${CMAKE_CURRENT_BINARY_DIR}/latex/Makefile
   # http://lists.debian.org/debian-italian/2006/12/msg00878.html
   # man2txt : man man | col -b | less
 
-  IF(GDCM_USE_VTK)
+  if(GDCM_USE_VTK)
     # Make this option a hidden option as vtkgdcm/doxygen stuff is a mess (copy/paste
     # from paraview). It always rerun -sigh-
-    IF(GDCM_VTK_DOCUMENTATION)
-      SET(BUILD_DOCUMENTATION 1)
-    ENDIF(GDCM_VTK_DOCUMENTATION)
-    SUBDIRS(vtk)
-  ENDIF(GDCM_USE_VTK)
+    if(GDCM_VTK_DOCUMENTATION)
+      set(BUILD_DOCUMENTATION 1)
+    endif()
+    add_subdirectory(vtk)
+  endif()
 
-ENDIF(GDCM_DOCUMENTATION)
+endif()
 

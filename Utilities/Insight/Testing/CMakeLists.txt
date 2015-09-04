@@ -1,1 +1,1 @@
-SUBDIRS(Cxx Python)
+add_subdirectory(Cxx Python)

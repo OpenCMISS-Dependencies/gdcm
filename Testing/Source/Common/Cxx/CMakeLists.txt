@@ -1,6 +1,6 @@
 # Define the tests for Common
 # Common
-SET(Common_TEST_SRCS
+set(Common_TEST_SRCS
   TestVersion
   TestDummyValueGenerator
   TestASN1
@@ -21,15 +21,15 @@ SET(Common_TEST_SRCS
   TestBase64
   )
 
-IF(GDCM_DATA_ROOT)
-SET(Common_TEST_SRCS
+if(GDCM_DATA_ROOT)
+set(Common_TEST_SRCS
   ${Common_TEST_SRCS}
   TestDirectory
   TestFilename
   TestMD5
   TestSHA1
   )
-ENDIF(GDCM_DATA_ROOT)
+endif()
 
 # Add the include paths
 INCLUDE_DIRECTORIES(
@@ -43,15 +43,15 @@ ADD_EXECUTABLE(gdcmCommonTests ${CommonTests})
 TARGET_LINK_LIBRARIES(gdcmCommonTests gdcmCommon)
 
 #Don't understand why I need that ??
-SET(GDCM_Common_TESTS "${EXECUTABLE_OUTPUT_PATH}/gdcmCommonTests")
+set(GDCM_Common_TESTS "${EXECUTABLE_OUTPUT_PATH}/gdcmCommonTests")
 
 # Loop over files and create executables
-FOREACH(name ${Common_TEST_SRCS})
-IF(CMAKE_CROSSCOMPILING) 
+foreach(name ${Common_TEST_SRCS})
+if(CMAKE_CROSSCOMPILING) 
   ADD_TEST(${name} ${TARGET_SYSTEM_EMULATOR} ${GDCM_Common_TESTS}${CMAKE_EXECUTABLE_SUFFIX} ${name})
-ELSE(CMAKE_CROSSCOMPILING) 
+else() 
   ADD_TEST(${name} ${GDCM_Common_TESTS} ${name})
-ENDIF(CMAKE_CROSSCOMPILING) 
-ENDFOREACH(name)
+endif() 
+endforeach()
 
 

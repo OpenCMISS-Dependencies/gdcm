@@ -1,6 +1,6 @@
 # Define the tests for Information Object Definition
 # IOD
-SET(IOD_TEST_SRCS
+set(IOD_TEST_SRCS
   TestTableReader
   TestTable
   TestTableEntry
@@ -37,11 +37,11 @@ ADD_EXECUTABLE(gdcmIODTests ${IODTests})
 TARGET_LINK_LIBRARIES(gdcmIODTests gdcmIOD)
 
 #Don't understand why I need that ??
-SET(GDCM_IOD_TESTS "${EXECUTABLE_OUTPUT_PATH}/gdcmIODTests")
+set(GDCM_IOD_TESTS "${EXECUTABLE_OUTPUT_PATH}/gdcmIODTests")
 
 # Loop over files and create executables
-FOREACH(name ${IOD_TEST_SRCS})
+foreach(name ${IOD_TEST_SRCS})
   ADD_TEST(${name} ${GDCM_IOD_TESTS} ${name})
-ENDFOREACH(name)
+endforeach()
 
 

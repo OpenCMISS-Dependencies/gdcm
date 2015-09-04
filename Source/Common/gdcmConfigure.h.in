@@ -128,8 +128,8 @@
 /* GDCM Versioning                                                          */
 
 /* Version number.  */
-#define GDCM_MAJOR_VERSION @GDCM_MAJOR_VERSION@
-#define GDCM_MINOR_VERSION @GDCM_MINOR_VERSION@
+#define GDCM_VERSION_MAJOR @GDCM_VERSION_MAJOR@
+#define GDCM_VERSION_MINOR @GDCM_VERSION_MINOR@
 #define GDCM_BUILD_VERSION @GDCM_BUILD_VERSION@
 #define GDCM_VERSION "@GDCM_VERSION@"
 

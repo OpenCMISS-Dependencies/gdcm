@@ -35,43 +35,43 @@ MARK_AS_ADVANCED(PYTHON_LIBRARY PYTHON_INCLUDE_PATH)
 # http://mail.python.org/pipermail/python-list/2002-April/141189.html
 # So here come craziest hack ever, since I cannot control the output of swig,
 # I need to fake a Python.h file only for MSVC compilers...insane !
-IF(MSVC)
+if(MSVC)
   CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/Python.h.in
     ${CMAKE_CURRENT_BINARY_DIR}/Python.h @ONLY
   )
   INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_BINARY_DIR} )
   # does not work quite as expected...
-  #  IF(CMAKE_CONFIGURATION_TYPES)
+  #  if(CMAKE_CONFIGURATION_TYPES)
   #SET_SOURCE_FILES_PROPERTIES(
   #        "${swig_generated_file_fullname}"
   #        PROPERTIES 
   #        COMPILE_FLAGS "/U _DEBUG")
-  #  ENDIF(CMAKE_CONFIGURATION_TYPES)
+  #  endif()
   
-  ELSE(MSVC)
+  else()
   # just plain including pyconfig.h is working...until one crazy python dev decide otherwise...
     INCLUDE_DIRECTORIES(
       ${PYTHON_INCLUDE_PATH}
     )
-ENDIF(MSVC)
+endif()
 SET_SOURCE_FILES_PROPERTIES(gdcmswig.i PROPERTIES CPLUSPLUS ON)
 
 
 # Some old swig 1.3 did not support this option:
-#SET(CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}")
+#set(CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}")
 
-#SET(GDCM_PYTHON_IMPLEMENTATION_NAME gdcmpython)
-SET(GDCM_PYTHON_IMPLEMENTATION_NAME gdcmswig)
-SET(MODULE_NAME gdcmswig)
+#set(GDCM_PYTHON_IMPLEMENTATION_NAME gdcmpython)
+set(GDCM_PYTHON_IMPLEMENTATION_NAME gdcmswig)
+set(MODULE_NAME gdcmswig)
 # BUG: DO NOT USE -interface flag it is NOT supported in cmake and in cmake > 2.6 will cause infinite rebuild
 # Ref: http://www.cmake.org/pipermail/cmake/2008-August/023237.html
 # UseSWIG and -interface flag (was: Re: CMake 2.6.1 available for download)
-#SET(CMAKE_SWIG_FLAGS "-interface _${GDCM_PYTHON_IMPLEMENTATION_NAME}")
+#set(CMAKE_SWIG_FLAGS "-interface _${GDCM_PYTHON_IMPLEMENTATION_NAME}")
 #SEPARATE_ARGUMENTS(CMAKE_SWIG_FLAGS)
 
 # While trying to get rid of the compilation warning in swig generated c++ code, I thought I could
 # simply do the following:
-#SET(CMAKE_CXX_FLAGS "")
+#set(CMAKE_CXX_FLAGS "")
 # well no, you cannot, it get rid of some important flags, and make the _gdcm.so incompatible with
 # the other gdcm lib. bad !!!
 #SET (SWIG_MODULE_${MODULE_NAME}_EXTRA_DEPS ${SWIG_MODULE_${MODULE_NAME}_EXTRA_DEPS} ${CMAKE_CURRENT_SOURCE_DIR}/docstrings.i)
@@ -114,9 +114,9 @@ SWIG_LINK_LIBRARIES(${GDCM_PYTHON_IMPLEMENTATION_NAME} gdcmMSFF gdcmIOD ${PYTHON
 # Windows: .dll is no longer supported as a filename extension for extension modules.
 # .pyd is now the only filename extension that will be searched for.
 # </quote>
-IF(WIN32 AND NOT CYGWIN)
+if(WIN32 AND NOT CYGWIN)
   SET_TARGET_PROPERTIES(${SWIG_MODULE_${GDCM_PYTHON_IMPLEMENTATION_NAME}_REAL_NAME} PROPERTIES SUFFIX ".pyd")
-ENDIF(WIN32 AND NOT CYGWIN)
+endif()
 #SET_TARGET_PROPERTIES(${SWIG_MODULE_${GDCM_PYTHON_IMPLEMENTATION_NAME}_REAL_NAME} PROPERTIES ${GDCM_LIBRARY_PROPERTIES})
 
 # swig generates a _gdcm.so and a gdcm.py, we need to copy gdcm.py to the proper place:
@@ -134,7 +134,7 @@ ADD_CUSTOM_COMMAND(
 #Module are always place in the library destination
 #but for poor win32 user I decided to place them
 # right next to the other dlls
-IF(NOT GDCM_INSTALL_NO_LIBRARIES)
+if(NOT GDCM_INSTALL_NO_LIBRARIES)
   INSTALL(TARGETS ${SWIG_MODULE_${GDCM_PYTHON_IMPLEMENTATION_NAME}_REAL_NAME}
     RUNTIME DESTINATION ${GDCM_INSTALL_BIN_DIR}/${python_site_package} COMPONENT PythonModule
     LIBRARY DESTINATION ${GDCM_INSTALL_LIB_DIR}/${python_site_package} COMPONENT Libraries
@@ -155,13 +155,13 @@ IF(NOT GDCM_INSTALL_NO_LIBRARIES)
   #  ${CMAKE_CURRENT_BINARY_DIR}/gdcm.pth
   #  DESTINATION ${GDCM_INSTALL_LIB_DIR}/${python_site_package} COMPONENT Libraries
   #)
-ENDIF(NOT GDCM_INSTALL_NO_LIBRARIES)
+endif()
 
 # Test that will try to load any class in the target language: python
 # it make sure swig was not broken accidentally
-IF(BUILD_TESTING)
+if(BUILD_TESTING)
   ADD_PYTHON_TEST(TestWrapPython TestWrap.py ${GDCM_SOURCE_DIR}/Source)
-ENDIF(BUILD_TESTING)
+endif()
 
 # TODO
 # python -c "from distutils import sysconfig; print sysconfig.get_python_lib()"

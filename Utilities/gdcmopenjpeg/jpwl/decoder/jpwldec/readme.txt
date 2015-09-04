@@ -66,7 +66,7 @@ Parameters :
 
 -M             : mode switch (-M 3) [1= BYPASS(LAZY) 2=RESET 4=RESTART(TERMALL) 8=VSC 16=ERTERM(SEGTERM) 32=SEGMARK(SEGSYM)]  "optional"
                     for several mode switch you have to add the value of each mode you want
-                    ex : RESTART(4) + RESET(2) + SEGMARK(32) = -M 38 
+                    ex : RESTART(4) + REset(2) + SEGMARK(32) = -M 38 
 
 -x             : Create an index file *.Idx (-x index_name.Idx) "optional"
 

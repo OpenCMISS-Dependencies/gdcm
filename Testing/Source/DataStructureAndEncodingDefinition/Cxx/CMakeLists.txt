@@ -1,6 +1,6 @@
 # Define the tests for Data Structure and Encoding Definitions
 # DSED
-SET(DSED_TEST_SRCS
+set(DSED_TEST_SRCS
 	TestAttribute
   TestCodeString
 	TestAttribute1
@@ -49,33 +49,33 @@ SET(DSED_TEST_SRCS
   TestElement5
   )
 
-IF(GDCM_DATA_ROOT)
-SET(DSED_TEST_SRCS
+if(GDCM_DATA_ROOT)
+set(DSED_TEST_SRCS
   ${DSED_TEST_SRCS}
   TestReader2
 	TestAttribute8
   )
-ENDIF(GDCM_DATA_ROOT)
+endif()
 
 CHECK_INCLUDE_FILE("fcntl.h"      CMAKE_HAVE_FCNTL_H)
 CHECK_INCLUDE_FILE("sched.h"      CMAKE_HAVE_SHED_H)
 CHECK_INCLUDE_FILE("sys/mman.h"   CMAKE_HAVE_SYS_MMAN_H)
 
 # Need mmap
-IF(CMAKE_HAVE_SYS_MMAN_H)
-  SET(DSED_TEST_SRCS ${DSED_TEST_SRCS}
+if(CMAKE_HAVE_SYS_MMAN_H)
+  set(DSED_TEST_SRCS ${DSED_TEST_SRCS}
     TestReader3
   )
-ENDIF(CMAKE_HAVE_SYS_MMAN_H)
+endif()
 
 OPTION(SHARED_PTR "shared_ptr" OFF)
 MARK_AS_ADVANCED(SHARED_PTR)
-IF(SHARED_PTR)
-  SET(DSED_TEST_SRCS
+if(SHARED_PTR)
+  set(DSED_TEST_SRCS
     ${DSED_TEST_SRCS}
     TestCopyValue
     )
-ENDIF(SHARED_PTR)
+endif()
 
 # Add the include paths
 INCLUDE_DIRECTORIES(
@@ -90,17 +90,17 @@ INCLUDE_DIRECTORIES(
 CREATE_TEST_SOURCELIST(DSEDTests gdcmDSEDTests.cxx ${DSED_TEST_SRCS})
 ADD_EXECUTABLE(gdcmDSEDTests ${DSEDTests})
 TARGET_LINK_LIBRARIES(gdcmDSEDTests gdcmDSED)
-IF(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
+if(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
   SET_TARGET_PROPERTIES( gdcmDSEDTests PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition")
-ENDIF(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
+endif()
 
 #Don't understand why I need that ??
-SET(GDCM_DSED_TESTS "${EXECUTABLE_OUTPUT_PATH}/gdcmDSEDTests")
+set(GDCM_DSED_TESTS "${EXECUTABLE_OUTPUT_PATH}/gdcmDSEDTests")
 
 # Loop over files and create executables
-FOREACH(name ${DSED_TEST_SRCS})
+foreach(name ${DSED_TEST_SRCS})
   ADD_TEST(${name} ${GDCM_DSED_TESTS} ${name})
-ENDFOREACH(name)
+endforeach()
 
 # FIXME
 #ADD_EXECUTABLE(TestAttribute2 TestAttribute2.cxx)

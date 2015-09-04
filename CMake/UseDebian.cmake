@@ -21,16 +21,16 @@
 #  For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 #
 
-IF(UNIX)
-  IF (NOT CMAKE_AR)
+if(UNIX)
+  if(NOT CMAKE_AR)
     MESSAGE(STATUS "No ar, cannot proceed")
-    SET(DEBIAN_FOUND FALSE)
-  ELSE (NOT CMAKE_AR)
-    SET(DEBIAN_FOUND TRUE)
+    set(DEBIAN_FOUND FALSE)
+  else()
+    set(DEBIAN_FOUND TRUE)
     # Detect if CPack was included or not
-    IF (NOT DEFINED "CPACK_PACKAGE_NAME") 
+    if(NOT DEFINED "CPACK_PACKAGE_NAME") 
       MESSAGE(FATAL_ERROR "CPack was not included, you should include CPack before Using UseDebian")
-    ENDIF (NOT DEFINED "CPACK_PACKAGE_NAME")
+    endif()
     
     MACRO(ADD_DEBIAN_TARGETS DEBNAME)
       # $ ar tv cmake_2.4.5-1_i386.deb
@@ -53,26 +53,26 @@ IF(UNIX)
 #" )
       
       # debian policy enforce lower case for package name
-      IF(NOT DEBIAN_PACKAGE_NAME)
+      if(NOT DEBIAN_PACKAGE_NAME)
 	STRING(TOLOWER
 	  ${CPACK_PACKAGE_NAME}
 	  DEBIAN_PACKAGE_NAME
 	  )
-      ENDIF(NOT DEBIAN_PACKAGE_NAME)
-      IF(NOT DEBIAN_PACKAGE_DEPENDS)
-	SET(DEBIAN_PACKAGE_DEPENDS
+      endif()
+      if(NOT DEBIAN_PACKAGE_DEPENDS)
+	set(DEBIAN_PACKAGE_DEPENDS
 	  "libc6 (>= 2.3.1-6), libgcc1 (>= 1:3.4.2-12)"
 	  )
-      ENDIF(NOT DEBIAN_PACKAGE_DEPENDS)
-      IF(NOT DEBIAN_ARCHITECTURE)
+      endif()
+      if(NOT DEBIAN_ARCHITECTURE)
 	# There is no such thing as i686 architecture on debian, you should use i386 instead
 	# $ dpkg --print-architecture
-	SET(DEBIAN_ARCHITECTURE i386)
-      ENDIF(NOT DEBIAN_ARCHITECTURE)
-      IF(NOT DEBIAN_PACKAGE_VERSION)
-	SET(DEBIAN_PACKAGE_VERSION
+	set(DEBIAN_ARCHITECTURE i386)
+      endif()
+      if(NOT DEBIAN_PACKAGE_VERSION)
+	set(DEBIAN_PACKAGE_VERSION
 	  ${CPACK_PACKAGE_VERSION})
-      ENDIF(NOT DEBIAN_PACKAGE_VERSION)
+      endif()
       
       #MESSAGE(${CMAKE_SYSTEM_PROCESSOR})
       
@@ -172,9 +172,9 @@ Description: ${CPACK_PACKAGE_DESCRIPTION_SUMMARY}
 	  ADDITIONAL_MAKE_CLEAN_FILES "debian-binary;control;md5sums;debian_package;") 
 	
       ENDMACRO(ADD_DEBIAN_TARGETS DEBNAME)
-ENDIF (NOT CMAKE_AR)
+endif()
 
 
-ENDIF(UNIX)
+endif()
 
 
