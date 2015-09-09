@@ -3,6 +3,8 @@ project(GDCM VERSION 2.0.12 LANGUAGES C CXX)
 set(CMAKE_POSITION_INDEPENDENT_CODE YES)
 # Dont expose the inner JPEG libraries
 set(JPEG_INSTALL_NO_DEVELOPMENT YES)
+set(GDCM_INSTALL_NO_DOCUMENTATION YES)
+set(GDCM_USE_SYSTEM_EXPAT NO)
 
 #-----------------------------------------------------------------------------
 # New cmake policy thingy
@@ -87,8 +89,8 @@ endif()
 
 #-----------------------------------------------------------------------------
 # Build shared lib by default
-OPTION(GDCM_BUILD_SHARED_LIBS "Build GDCM with shared libraries." OFF)
-set(BUILD_SHARED_LIBS ${GDCM_BUILD_SHARED_LIBS})
+#OPTION(GDCM_BUILD_SHARED_LIBS "Build GDCM with shared libraries." OFF)
+#set(BUILD_SHARED_LIBS ${GDCM_BUILD_SHARED_LIBS})
 
 #-----------------------------------------------------------------------------
 SET (EXECUTABLE_OUTPUT_PATH ${GDCM_BINARY_DIR}/bin CACHE PATH "Single output directory for building all executables.")
@@ -226,7 +228,7 @@ endif()
 OPTION(GDCM_USE_SYSTEM_ZLIB "Use system zlib" OFF)
 #OPTION(GDCM_USE_SYSTEM_POLARSSL "Use system polarssl (xyssl)" OFF)
 OPTION(GDCM_USE_SYSTEM_OPENSSL  "Use system OpenSSL" OFF)
-OPTION(GDCM_USE_SYSTEM_EXPAT "Use system expat" OFF)
+OPTION(GDCM_USE_SYSTEM_EXPAT "Use system expat" ON)
 OPTION(GDCM_USE_SYSTEM_LJPEG "Use system ljpeg (ijg lib)" OFF)
 OPTION(GDCM_USE_SYSTEM_OPENJPEG "Use system openjpeg (1.x)" OFF)
 OPTION(GDCM_USE_SYSTEM_POPPLER "Use system poppler (pdf)" OFF)
