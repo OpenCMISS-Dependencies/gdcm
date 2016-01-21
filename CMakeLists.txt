@@ -88,6 +88,15 @@ if(MSVC)
 endif()
 
 #-----------------------------------------------------------------------------
+# we need to link against CoreFoundation so that we can use CFBundle to get the executable path.
+if(APPLE)
+  find_library(COREFOUNDATION_LIBRARY CoreFoundation)
+  if (NOT COREFOUNDATION_LIBRARY)
+      message(FATAL_ERROR "Could not find the CoreFoundation framework library, which is required to build GDCM.")
+  endif()
+endif()
+
+#-----------------------------------------------------------------------------
 # Build shared lib by default
 #OPTION(GDCM_BUILD_SHARED_LIBS "Build GDCM with shared libraries." OFF)
 #set(BUILD_SHARED_LIBS ${GDCM_BUILD_SHARED_LIBS})
@@ -649,12 +658,6 @@ if(EXISTS "${CMAKE_ROOT}/Modules/CPack.cmake")
 
   INCLUDE(CPack)
 
-endif()
-
-#-----------------------------------------------------------------------------
-# we need to link against CoreFoundation so that we can use CFBundle to get the executable path.
-if(APPLE)
-  find_library(COREFOUNDATION_LIBRARY CoreFoundation)
 endif()
 
 #-----------------------------------------------------------------------------
