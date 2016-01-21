@@ -23,6 +23,10 @@
 #include <iterator>
 #include <iomanip>
 
+#if _MSC_VER >= 1800
+#include <algorithm>
+#endif
+
 //#include <stdlib.h> // abort
 
 namespace gdcm

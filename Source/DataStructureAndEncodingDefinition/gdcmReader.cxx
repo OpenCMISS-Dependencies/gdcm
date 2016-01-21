@@ -292,7 +292,7 @@ std::istream &is = *Stream;
     //is.clear();
     // well not anymore, see special handling of trailing \0 in:
     // basic_unzip_streambuf<charT, traits>::fill_input_buffer(void)
-    return is;
+    return !is.fail();
     }
 
   try
@@ -657,7 +657,7 @@ std::istream &is = *Stream;
     assert( ts.GetNegociatedType() == TransferSyntax::Explicit );
     F->GetDataSet().ReadUpToTag<ExplicitDataElement,SwapperNoOp>(gzis,tag, skiptags);
 
-    return is;
+    return !is.fail();
     }
 
   try

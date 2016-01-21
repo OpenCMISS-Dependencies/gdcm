@@ -130,16 +130,6 @@ if(UNIX) #Avoid polluting Win32 cmakecache
   CHECK_INCLUDE_FILE("inttypes.h"     CMAKE_HAVE_INTTYPES_H)
 endif()
 
-#-----------------------------------------------------------------------------
-# Build the main lib...
-if(MSVC)
-  include_directories(
-    "${GDCM_SOURCE_DIR}/Utilities/C99"
-  )
-  # Process the install rules from C99
-  add_subdirectory(Utilities/C99)
-endif()
-
 # --------------------------------------------------------------------------
 # Configure the export configuration
 
@@ -160,7 +150,6 @@ endif()
 
 STRING(TOLOWER ${PROJECT_NAME} projectname)
 set(subdir "${projectname}-${GDCM_VERSION_MAJOR}.${GDCM_VERSION_MINOR}")
-#MESSAGE(${subdir})
 
 if(NOT GDCM_INSTALL_BIN_DIR)
   set(GDCM_INSTALL_BIN_DIR "bin")
@@ -221,6 +210,16 @@ else()
   if(GDCM_INSTALL_NO_DEVELOPMENT)
     set(GDCM_INSTALL_NO_LIBRARIES 1)
   endif()
+endif()
+
+#-----------------------------------------------------------------------------
+# Build the main lib...
+if(MSVC)
+  include_directories(
+    "${GDCM_SOURCE_DIR}/Utilities/C99"
+  )
+  # Process the install rules from C99
+  add_subdirectory(Utilities/C99)
 endif()
 
 #-----------------------------------------------------------------------------
