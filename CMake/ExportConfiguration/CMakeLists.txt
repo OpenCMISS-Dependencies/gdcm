@@ -1,16 +1,19 @@
 ### Build the configuration file for external projects using GDCM and cmake:
+set(GDCM_CONFIG_FILE ${GDCM_BINARY_DIR}/gdcm-abi-config.cmake)
+file(RELATIVE_PATH GDCM_CONFIG_INCLUDE_RELATIVE_PATH ${CMAKE_INSTALL_PREFIX}/${GDCM_INSTALL_PACKAGE_DIR} ${CMAKE_INSTALL_PREFIX})
 configure_file( GDCMConfig.cmake.in
-  ${GDCM_BINARY_DIR}/GDCMConfig.cmake
+	${GDCM_CONFIG_FILE}
   @ONLY
 )
-install( FILES ${GDCM_BINARY_DIR}/GDCMConfig.cmake
+install( FILES ${GDCM_CONFIG_FILE}
   DESTINATION ${GDCM_INSTALL_PACKAGE_DIR} COMPONENT Headers
 )
+set(GDCM_VERSION_FILE ${GDCM_BINARY_DIR}/gdcm-abi-config-version.cmake)
 configure_file( GDCMConfigVersion.cmake.in
-  ${GDCM_BINARY_DIR}/GDCMConfigVersion.cmake
+	${GDCM_VERSION_FILE}
   @ONLY
 )
-install( FILES ${GDCM_BINARY_DIR}/GDCMConfigVersion.cmake
+install( FILES ${GDCM_VERSION_FILE}
   DESTINATION ${GDCM_INSTALL_PACKAGE_DIR} COMPONENT Headers
 )
 configure_file( UseGDCM.cmake.in
@@ -125,9 +128,9 @@ set(targets
   php_vtkgdcm
   vtkgdcmsharpglue
   )
-file(WRITE ${GDCM_BINARY_DIR}/GDCMExports.cmake "")
+file(WRITE ${GDCM_BINARY_DIR}/${GDCM_EXPORTS_NAME}.cmake "")
 foreach(target ${targets})
   if(TARGET ${target})
-    export(TARGETS ${target} FILE ${GDCM_BINARY_DIR}/GDCMExports.cmake APPEND)
+	  export(TARGETS ${target} FILE ${GDCM_BINARY_DIR}/${GDCM_EXPORTS_NAME}.cmake APPEND)
   endif()
 endforeach()

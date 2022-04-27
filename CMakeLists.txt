@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.7)
+cmake_minimum_required(VERSION 3.4)
 if(POLICY CMP0022)
   cmake_policy(SET CMP0022 OLD)
 endif()
@@ -8,13 +8,22 @@ endif()
 if(POLICY CMP0042)
   cmake_policy(SET CMP0042 NEW)
 endif()
-project(GDCM)
+set(GDCM_MAJOR_VERSION 2)
+set(GDCM_MINOR_VERSION 6)
+set(GDCM_BUILD_VERSION 6)
+
+project(GDCM VERSION ${GDCM_MAJOR_VERSION}.${GDCM_MINOR_VERSION}.${GDCM_BUILD_VERSION} LANGUAGES C CXX)
+
 mark_as_advanced(CMAKE_BACKWARDS_COMPATIBILITY CMAKE_BUILD_TYPE CMAKE_INSTALL_PREFIX)
 set(GDCM_CMAKE_DIR "${GDCM_SOURCE_DIR}/CMake" CACHE INTERNAL "")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${GDCM_CMAKE_DIR}")
 
 set(GDCM_PACKAGE_DESCRIPTION_SUMMARY "GDCM - Grassroots DICOM. GDCM is yet another DICOM library.")
 set(GDCM_PACKAGE_CONTACT "GDCM Developers <gdcm-developers@lists.sourceforge.net>")
+
+if (ENABLE_PIC)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
 
 # TODO
 # http://www.vtk.org/pipermail/vtkusers/2007-May/090968.html
@@ -30,9 +39,6 @@ set(GDCM_PACKAGE_CONTACT "GDCM Developers <gdcm-developers@lists.sourceforge.net
 # VTK source tree for "DELAYLOAD"
 
 #----------------------------------------------------------------------------
-set(GDCM_MAJOR_VERSION 2)
-set(GDCM_MINOR_VERSION 6)
-set(GDCM_BUILD_VERSION 6)
 set(GDCM_VERSION
   "${GDCM_MAJOR_VERSION}.${GDCM_MINOR_VERSION}.${GDCM_BUILD_VERSION}")
 # let advanced user the option to define GDCM_API_VERSION:
@@ -60,8 +66,11 @@ set(GDCM_STANDALONE 0)
 # install(EXPORT...)
 # This sets the default value for GDCM_STANDALONE
 if(NOT GDCM_TARGETS_NAME)
-  set(GDCM_TARGETS_NAME GDCMTargets)
+  set(GDCM_TARGETS_NAME gdcm-targets)
   set(GDCM_STANDALONE 1)
+endif()
+if(NOT GDCM_EXPORTS_NAME)
+  set(GDCM_EXPORTS_NAME gdcm-exports) 
 endif()
 #-----------------------------------------------------------------------------
 # PDB handling + Module handling
@@ -410,6 +419,7 @@ if(GDCM_USE_SYSTEM_ZLIB)
   # If user say so, then this is a requirement !
   find_package(ZLIB REQUIRED)
   set(GDCM_ZLIB_LIBRARIES ${ZLIB_LIBRARIES})
+  set(GDCM_ZLIB_INCLUDE_DIRS ${ZLIB_INCLUDE_DIRS})
 else()
   set(GDCM_ZLIB_LIBRARIES "gdcmzlib")
 endif()
